@@ -7,9 +7,27 @@ package lambda;
 public class Request {
 
     String name;
+    String bucketname;
+    String filename;
 
     public String getName() {
         return name;
+    }
+
+    public String getBucketname() {
+        return bucketname;
+    }
+
+    public String getFilename() {
+        return filename;
+    }
+
+    public void setBucketname(String bucketname) {
+        this.bucketname = bucketname;
+    }
+
+    public void setFilename(String filename) {
+        this.filename = filename;
     }
     
     public String getNameALLCAPS() {
