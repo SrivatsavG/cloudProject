@@ -85,7 +85,7 @@ public class ProcessCSV implements RequestHandler<Request, HashMap<String, Objec
 //
 //            properties.load(new FileInputStream("db.properties"));
 //            logger.log("DB Properties access is successful");
-//            
+//
 //            String url = properties.getProperty("url");
 //            String username = properties.getProperty("username");
 //            String password = properties.getProperty("password");

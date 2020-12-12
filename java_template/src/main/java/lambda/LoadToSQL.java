@@ -34,12 +34,6 @@ import com.amazonaws.services.lambda.runtime.CognitoIdentity;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import com.amazonaws.services.dynamodbv2.model.ResourceNotFoundException;
-
 import java.nio.charset.Charset;
 
 /**
@@ -48,7 +42,7 @@ import java.nio.charset.Charset;
  * @author Wes Lloyd
  * @author Robert Cordingly
  */
-public class ProcessCSVForNoSQL implements RequestHandler<Request, HashMap<String, Object>> {
+public class LoadToSQL implements RequestHandler<Request, HashMap<String, Object>> {
 
     /**
      * Lambda Function Handler
@@ -57,8 +51,6 @@ public class ProcessCSVForNoSQL implements RequestHandler<Request, HashMap<Strin
      * @param context
      * @return HashMap that Lambda will automatically convert into JSON.
      */
-    
-    
     public HashMap<String, Object> handleRequest(Request request, Context context) {
 
         //Collect inital data.
@@ -87,21 +79,33 @@ public class ProcessCSVForNoSQL implements RequestHandler<Request, HashMap<Strin
 
         logger.log("S3 access is successful");
 
-        //----------------------NO SQL SETUP----------------------------
-       
-        String region = "US_EAST_2";
-        String tableName = "test-nosql";
-        
+        //----------------------SQL SETUP----------------------------
         try {
-            
-            
-            final AmazonDynamoDB ddb = AmazonDynamoDBClientBuilder.defaultClient();
-                
-            
-            AmazonDynamoDBClient client = new AmazonDynamoDBClient();
-            client.setRegion(Region.getRegion(REGION));
-            this.dynamoDb = new DynamoDB(client);
-            logger.log("Connecting to NoSQL DB");
+//            Properties properties = new Properties();
+//
+//            properties.load(new FileInputStream("db.properties"));
+//            logger.log("DB Properties access is successful");
+//
+//            String url = properties.getProperty("url");
+//            String username = properties.getProperty("username");
+//            String password = properties.getProperty("password");
+//            String driver = properties.getProperty("driver");
+
+            //password=team9Password
+            //url=jdbc:mysql://team9-rds.cluster-c1egvakjnwad.us-east-2.rds.amazonaws.com:3306/TEST
+            //driver=com.mysql.cj.jdbc.Driver
+            //username=team9
+            String url = "jdbc:mysql://team9-rds.cluster-c1egvakjnwad.us-east-2.rds.amazonaws.com:3306/TEST";
+            String username = "team9";
+            String password = "team9Password";
+            String driver = "com.mysql.cj.jdbc.Driver";
+
+            logger.log("Username: " + username);
+            logger.log("url: " + url);
+            logger.log("password: " + password);
+            logger.log("driver: " + driver);
+
+            logger.log("Connecting to DB");
 
             try ( Connection con = DriverManager.getConnection(url, username, password)) {
                 logger.log("Connection successful");
@@ -113,7 +117,19 @@ public class ProcessCSVForNoSQL implements RequestHandler<Request, HashMap<Strin
                     if (i != 0) {
                         String[] arrOfStr = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
                         //("insert into mytable values('" + request.getName() + "','b','c');");-- Tutorial 6 reference
+                        logger.log("Adding row " + i + 1);
                         i++;
+                        logger.log(arrOfStr[0]);
+                        logger.log(arrOfStr[1]);
+                        logger.log(arrOfStr[2]);
+                        logger.log(arrOfStr[3]);
+                        logger.log(arrOfStr[4]);
+                        logger.log(arrOfStr[5]);
+                        logger.log(arrOfStr[6]);
+                        logger.log(arrOfStr[7]);
+                        logger.log(arrOfStr[8]);
+                        logger.log(arrOfStr[9]);
+                        logger.log(arrOfStr[10]);
                         //PreparedStatement ps = con.prepareStatement("insert into mytable values('" + request.getName() + "','b','c');");
                         PreparedStatement ps = con.prepareStatement("insert into mytable values('" + arrOfStr[0] + "','" + arrOfStr[1] + "','" + arrOfStr[2] + "','" + arrOfStr[3] + "','" + arrOfStr[4] + "','" + arrOfStr[5] + "','" + arrOfStr[6] + "','" + arrOfStr[7] + "','" + arrOfStr[8] + "','" + arrOfStr[9] + "','" + arrOfStr[10] + "');");
                         ps.execute();

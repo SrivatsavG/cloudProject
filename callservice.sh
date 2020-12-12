@@ -9,7 +9,7 @@ json='{"bucketname":"'"$bucketname"'","filename":"'"$filename"'"}'
 
 echo "Invoking LoadToSQL Lambda function using API Gateway"
 
-time output=`curl -s -H "Content-Type: application/json" -X POST -d $json https://a9dnv1fprj.execute-api.us-east-2.amazonaws.com/dev`
+time output=`curl -s -H "Content-Type: application/json" -X POST -d $json https://0os20s0079.execute-api.us-east-2.amazonaws.com/dev`
 echo ""
 
 echo ""
