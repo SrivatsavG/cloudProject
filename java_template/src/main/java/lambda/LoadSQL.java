@@ -42,7 +42,7 @@ import java.nio.charset.Charset;
  * @author Wes Lloyd
  * @author Robert Cordingly
  */
-public class LoadToSQL implements RequestHandler<Request, HashMap<String, Object>> {
+public class LoadSQL implements RequestHandler<Request, HashMap<String, Object>> {
 
     /**
      * Lambda Function Handler
@@ -117,19 +117,6 @@ public class LoadToSQL implements RequestHandler<Request, HashMap<String, Object
                     if (i != 0) {
                         String[] arrOfStr = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
                         //("insert into mytable values('" + request.getName() + "','b','c');");-- Tutorial 6 reference
-                        logger.log("Adding row " + i + 1);
-                        i++;
-                        logger.log(arrOfStr[0]);
-                        logger.log(arrOfStr[1]);
-                        logger.log(arrOfStr[2]);
-                        logger.log(arrOfStr[3]);
-                        logger.log(arrOfStr[4]);
-                        logger.log(arrOfStr[5]);
-                        logger.log(arrOfStr[6]);
-                        logger.log(arrOfStr[7]);
-                        logger.log(arrOfStr[8]);
-                        logger.log(arrOfStr[9]);
-                        logger.log(arrOfStr[10]);
                         //PreparedStatement ps = con.prepareStatement("insert into mytable values('" + request.getName() + "','b','c');");
                         PreparedStatement ps = con.prepareStatement("insert into mytable values('" + arrOfStr[0] + "','" + arrOfStr[1] + "','" + arrOfStr[2] + "','" + arrOfStr[3] + "','" + arrOfStr[4] + "','" + arrOfStr[5] + "','" + arrOfStr[6] + "','" + arrOfStr[7] + "','" + arrOfStr[8] + "','" + arrOfStr[9] + "','" + arrOfStr[10] + "');");
                         ps.execute();
@@ -139,7 +126,7 @@ public class LoadToSQL implements RequestHandler<Request, HashMap<String, Object
                 }
                 scanner.close();
                 logger.log("Writing to SQL successful");
-                response.setValue("Hello, THIS WAS SUCCESSFUL!!");
+                response.setValue("LOAD SQL SUCCESSFUL!! :)");
             }
 
         } catch (Exception e) {
@@ -149,7 +136,7 @@ public class LoadToSQL implements RequestHandler<Request, HashMap<String, Object
             PrintWriter pw = new PrintWriter(sw);
             e.printStackTrace(pw);
             logger.log(sw.toString());
-            response.setValue("THIS FAILED!!");
+            response.setValue("LOAD SQL FAILED!!");
         }
 
         //scanning data line by line

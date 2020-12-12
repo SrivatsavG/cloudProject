@@ -21,7 +21,8 @@ import java.util.Scanner;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Properties;
-
+import saaf.Inspector;
+import java.util.HashMap;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.S3Object;
@@ -42,7 +43,7 @@ import java.nio.charset.Charset;
  * @author Wes Lloyd
  * @author Robert Cordingly
  */
-public class ProcessCSV implements RequestHandler<Request, HashMap<String, Object>> {
+public class QuerySQL implements RequestHandler<Request, HashMap<String, Object>> {
 
     /**
      * Lambda Function Handler
@@ -56,45 +57,13 @@ public class ProcessCSV implements RequestHandler<Request, HashMap<String, Objec
         //Collect inital data.
         Inspector inspector = new Inspector();
         inspector.inspectAll();
-
+        int j = 1;
         //****************START FUNCTION IMPLEMENTATION*************************
         LambdaLogger logger = context.getLogger();
         Response response = new Response();
 
-        //S3 SETUP
-        String bucketname = request.getBucketname();
-        String filename = request.getFilename();
-        logger.log("Bucketname is " + bucketname);
-        logger.log("Filename is " + filename);
-        AmazonS3 s3Client = AmazonS3ClientBuilder.standard().build();
-        //get object file using source bucket and srcKey name
-        logger.log("AmazonS3 s3Client line works");
-        S3Object s3Object = s3Client.getObject(new GetObjectRequest(bucketname, filename));
-
-        logger.log("S3Object s3Object line works");
-        //get content of the file
-        InputStream objectData = s3Object.getObjectContent();
-
-        logger.log("InputStream objectData line works");
-
-        logger.log("S3 access is successful");
-
-        //----------------------SQL SETUP----------------------------
         try {
-//            Properties properties = new Properties();
-//
-//            properties.load(new FileInputStream("db.properties"));
-//            logger.log("DB Properties access is successful");
-//
-//            String url = properties.getProperty("url");
-//            String username = properties.getProperty("username");
-//            String password = properties.getProperty("password");
-//            String driver = properties.getProperty("driver");
 
-            //password=team9Password
-            //url=jdbc:mysql://team9-rds.cluster-c1egvakjnwad.us-east-2.rds.amazonaws.com:3306/TEST
-            //driver=com.mysql.cj.jdbc.Driver
-            //username=team9
             String url = "jdbc:mysql://team9-rds.cluster-c1egvakjnwad.us-east-2.rds.amazonaws.com:3306/TEST";
             String username = "team9";
             String password = "team9Password";
@@ -109,24 +78,57 @@ public class ProcessCSV implements RequestHandler<Request, HashMap<String, Objec
 
             try ( Connection con = DriverManager.getConnection(url, username, password)) {
                 logger.log("Connection successful");
-                Scanner scanner = new Scanner(objectData);
-                int i = 0;
-                while (scanner.hasNext()) {
 
-                    String line = scanner.nextLine();
-                    if (i != 0) {
-                        String[] arrOfStr = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
-                        //("insert into mytable values('" + request.getName() + "','b','c');");-- Tutorial 6 reference
-                        //PreparedStatement ps = con.prepareStatement("insert into mytable values('" + request.getName() + "','b','c');");
-                        PreparedStatement ps = con.prepareStatement("insert into mytable values('" + arrOfStr[0] + "','" + arrOfStr[1] + "','" + arrOfStr[2] + "','" + arrOfStr[3] + "','" + arrOfStr[4] + "','" + arrOfStr[5] + "','" + arrOfStr[6] + "','" + arrOfStr[7] + "','" + arrOfStr[8] + "','" + arrOfStr[9] + "','" + arrOfStr[10] + "');");
-                        ps.execute();
-                    }
-                    i++;
+                //response.setValue("Hello, THIS WAS SUCCESSFUL!!");
+                // Query mytable to obtain full resultset
+                PreparedStatement ps = con.prepareStatement("select * from mytable;");
+                ResultSet rs = ps.executeQuery();
 
+                // Load query results for [name] column into a Java Linked List
+                // ignore [col2] and [col3] 
+                LinkedList<String> list = new LinkedList<String>();
+
+                while (rs.next()) {
+                    //logger.log("col1=" + rs.getString("cdc_report_dt"));
+                    list.add(rs.getString("cdc_report"));
+                    list.add(rs.getString("pos_spec_dt"));
+                    list.add(rs.getString("onset_dt"));
+                    list.add(rs.getString("current_status"));
+                    list.add(rs.getString("sex"));
+                    list.add(rs.getString("age_group"));
+                    list.add(rs.getString("race"));
+                    list.add(rs.getString("hosp_yn"));
+                    list.add(rs.getString("icu_yn"));
+                    list.add(rs.getString("death_yn"));
+                    list.add(rs.getString("medcond_yn"));
+
+                    logger.log("Record Start: " + j);
+                    logger.log("col1=" + rs.getString("cdc_report"));
+                    logger.log("col2=" + rs.getString("pos_spec_dt"));
+                    logger.log("col3=" + rs.getString("onset_dt"));
+                    logger.log("col4=" + rs.getString("current_status"));
+                    logger.log("col5=" + rs.getString("sex"));
+                    logger.log("col6=" + rs.getString("age_group"));
+                    logger.log("col7=" + rs.getString("race"));
+                    logger.log("col8=" + rs.getString("hosp_yn"));
+                    logger.log("col9=" + rs.getString("icu_yn"));
+                    logger.log("col10=" + rs.getString("death_yn"));
+                    logger.log("col11=" + rs.getString("medcond_yn"));
+
+                    logger.log("Record End: " + j);
+                    j++;
                 }
-                scanner.close();
-                logger.log("Writing to SQL successful");
-                response.setValue("Hello, THIS WAS SUCCESSFUL!!");
+
+                //j++;
+                rs.close();
+                con.close();
+
+                /* for (String data:list){
+                                logger.log(data);
+                           }*/
+                response.setValue("QUERYSQL Successful");
+                response.setValue("list");
+
             }
 
         } catch (Exception e) {
@@ -136,7 +138,7 @@ public class ProcessCSV implements RequestHandler<Request, HashMap<String, Objec
             PrintWriter pw = new PrintWriter(sw);
             e.printStackTrace(pw);
             logger.log(sw.toString());
-            response.setValue("THIS FAILED!!");
+            response.setValue("QUERYSQL FAILED!!");
         }
 
         //scanning data line by line
