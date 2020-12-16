@@ -9,6 +9,18 @@ public class Request {
     String name;
     String bucketname;
     String filename;
+    String totalRecords;
+    
+    String filenameSrc;
+    String filenameDest;
+    
+    public String getTotalRecords() {
+        return totalRecords;
+    }
+    
+    public void setTotalRecords(String totalRecords) {
+        this.totalRecords = totalRecords;
+    }
 
     public String getName() {
         return name;
@@ -20,6 +32,22 @@ public class Request {
 
     public String getFilename() {
         return filename;
+    }
+    
+    public String getFilenameSrc() {
+        return filenameSrc;
+    }
+    
+    public void setFilenameSrc(String filenameSrc) {
+        this.filenameSrc = filenameSrc;
+    }
+    
+    public String getFilenameDest() {
+        return filenameDest;
+    }
+    
+    public void setFilenameDest(String filenameDest) {
+        this.filenameDest = filenameDest;
     }
 
     public void setBucketname(String bucketname) {

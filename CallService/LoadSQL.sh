@@ -3,7 +3,7 @@
 
 
 bucketname="team9-s3"
-filename="test.csv"
+filename="transformedData.csv"
 
 json='{"bucketname":"'"$bucketname"'","filename":"'"$filename"'"}'
 
