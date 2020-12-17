@@ -122,7 +122,6 @@ public class LoadSQL implements RequestHandler<Request, HashMap<String, Object>>
                         ps.execute();
                     }
                     i++;
-
                 }
                 scanner.close();
                 logger.log("Writing to SQL successful");

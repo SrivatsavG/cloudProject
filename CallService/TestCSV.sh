@@ -3,8 +3,8 @@
 
 
 bucketname="team9-s3"
-filenameSrc="rawData.csv"
-filenameDest="transformedData.csv"
+filenameSrc="test.csv"
+filenameDest="testTransform.csv"
 totalRecords="10000"
 
 json='{"bucketname":"'"$bucketname"'","filenameSrc":"'"$filenameSrc"'","filenameDest":"'"$filenameDest"'","totalRecords":"'"$totalRecords"'"}'
@@ -12,7 +12,7 @@ json='{"bucketname":"'"$bucketname"'","filenameSrc":"'"$filenameSrc"'","filename
 
 echo "Invoking Transform Lambda function using API Gateway"
 
-time output=`curl -s -H "Content-Type: application/json" -X POST -d $json https://i6h74w16a8.execute-api.us-east-2.amazonaws.com/dev`
+time output=`curl -s -H "Content-Type: application/json" -X POST -d $json https://rouc2pmqod.execute-api.us-east-2.amazonaws.com/dev`
 echo ""
 
 echo ""

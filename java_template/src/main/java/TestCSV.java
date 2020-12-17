@@ -62,7 +62,7 @@ import com.amazonaws.services.lambda.runtime.LambdaLogger;
  * @author Srivastav Gopalakrishnan
  * @author Patrick Moy
  */
-public class TransformCSV implements RequestHandler<Request, HashMap<String, Object>> {
+public class TestCSV implements RequestHandler<Request, HashMap<String, Object>> {
 
     /**
      * Lambda Function Handler takes .csv file from S3 and transforms, creating
@@ -81,7 +81,6 @@ public class TransformCSV implements RequestHandler<Request, HashMap<String, Obj
         String bucketname = request.getBucketname();
         String filenameSrc = request.getFilenameSrc();
         String filenameDest = request.getFilenameDest();
-        int totalRecords = Integer.parseInt(request.getTotalRecords());
 
         //get object file using source bucket and srcKey name
         S3Object s3Object = s3ClientRead.getObject(new GetObjectRequest(bucketname, filenameSrc));
@@ -90,49 +89,29 @@ public class TransformCSV implements RequestHandler<Request, HashMap<String, Obj
         InputStream objectData = s3Object.getObjectContent();
         //scanning data line by line
 
-        // Processing .csv
-        StringWriter sw;
+        // Processing .csv  
+        StringWriter sw = new StringWriter();
+                
+        logger.log("EXTRACTING RECORD");
         try ( Scanner scanner = new Scanner(objectData)) {
-            sw = new StringWriter();
-            logger.log("Start While Loop");
-            int recordCount = 0;
-            while (scanner.hasNext()) {
+
+            for (int j = 0; j < 2; j++) {
                 String line = scanner.nextLine();
+                sw = new StringWriter();
                 // RegEx handles splitting when some values contain commas (using lookahead)
                 String[] arrOfStr = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
                 for (int i = 0; i < arrOfStr.length; i++) {
                     String str = arrOfStr[i];
-                    if (i == 4) {
-                        // Transforms listed gender to single-char representation
-                        if (str.equals("Male")) {
-                            str = "M";
-                        } else if (str.equals("Female")) {
-                            str = "F";
-                        } else if (str.equals("Other") || str.equals("Missing") || str.equals("Unknown")) {
-                            str = "U";
-                        }
-                    } else if (i == 5) {
-                        if (str.equals("0 - 9 Years") || str.equals("10-19")) {
-                            str = "Young";
-                        } else if (str.equals("10 - 19 Years") || str.equals("20 - 29 Years") || str.equals("30 - 39 Years") || str.equals("40 - 49 Years") || str.equals("50 - 59 Years")) {
-                            str = "Adult";
-                        } else {
-                            str = "Elderly";
-                        }
-                    }
-
+                    logger.log(str);
                     sw.append(str);
                     if (i != arrOfStr.length - 1) {
                         sw.append(",");
                     }
                 }
-                sw.append("\n");
-                recordCount++;
-                if (recordCount == totalRecords) {
-                    break;
-                }
             }
+
         }
+        logger.log("FINISHED EXTRACTING RECORD");
 
         logger.log("Transformed CSV");
 

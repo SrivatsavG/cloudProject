@@ -81,51 +81,28 @@ public class QuerySQL implements RequestHandler<Request, HashMap<String, Object>
 
                 //response.setValue("Hello, THIS WAS SUCCESSFUL!!");
                 // Query mytable to obtain full resultset
+                
+  
+               
+                long startTime = System.nanoTime();              
                 PreparedStatement ps = con.prepareStatement("select * from mytable;");
                 ResultSet rs = ps.executeQuery();
-
-                // Load query results for [name] column into a Java Linked List
-                // ignore [col2] and [col3] 
-                LinkedList<String> list = new LinkedList<String>();
-
-                while (rs.next()) {
-                    //logger.log("col1=" + rs.getString("cdc_report_dt"));
-                    list.add(rs.getString("cdc_report"));
-                    list.add(rs.getString("pos_spec_dt"));
-                    list.add(rs.getString("onset_dt"));
-                    list.add(rs.getString("current_status"));
-                    list.add(rs.getString("sex"));
-                    list.add(rs.getString("age_group"));
-                    list.add(rs.getString("race"));
-                    list.add(rs.getString("hosp_yn"));
-                    list.add(rs.getString("icu_yn"));
-                    list.add(rs.getString("death_yn"));
-                    list.add(rs.getString("medcond_yn"));
-
-                    logger.log("Record Start: " + j);
-                    logger.log("col1=" + rs.getString("cdc_report"));
-                    logger.log("col2=" + rs.getString("pos_spec_dt"));
-                    logger.log("col3=" + rs.getString("onset_dt"));
-                    logger.log("col4=" + rs.getString("current_status"));
-                    logger.log("col5=" + rs.getString("sex"));
-                    logger.log("col6=" + rs.getString("age_group"));
-                    logger.log("col7=" + rs.getString("race"));
-                    logger.log("col8=" + rs.getString("hosp_yn"));
-                    logger.log("col9=" + rs.getString("icu_yn"));
-                    logger.log("col10=" + rs.getString("death_yn"));
-                    logger.log("col11=" + rs.getString("medcond_yn"));
-
-                    logger.log("Record End: " + j);
-                    j++;
-                }
-
+                long stopTime = System.nanoTime();
+                long elapsedTime = stopTime - startTime;
+                
+                long startTime1 = System.nanoTime();
+                PreparedStatement ps1 = con.prepareStatement("select cdc_report_dt ,count(*)  from mytable group by cdc_report_dt;");
+                ResultSet rs1 = ps1.executeQuery();
+                long stopTime1 = System.nanoTime();
+                long elapsedTime1 = stopTime1 - startTime1;
+                
+                logger.log("Query Select * run-time " + elapsedTime);
+                logger.log("Query Group-by run-time " + elapsedTime1);
+                
                 //j++;
                 rs.close();
                 con.close();
 
-                /* for (String data:list){
-                                logger.log(data);
-                           }*/
                 response.setValue("QUERYSQL Successful");
                 response.setValue("list");
 
