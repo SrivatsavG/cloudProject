@@ -14,6 +14,16 @@ public class Request {
     String filenameSrc;
     String filenameDest;
     
+    String dynamoDBTableName;
+    
+    public void setDynamoDBTableName(String tablename){
+        this.dynamoDBTableName = tablename;
+    }
+    
+    public String getDynamoDBTableName(){
+        return this.dynamoDBTableName;
+    }
+    
     public String getTotalRecords() {
         return totalRecords;
     }

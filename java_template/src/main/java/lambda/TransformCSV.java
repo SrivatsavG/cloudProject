@@ -101,7 +101,7 @@ public class TransformCSV implements RequestHandler<Request, HashMap<String, Obj
                 // RegEx handles splitting when some values contain commas (using lookahead)
                 String[] arrOfStr = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
                 for (int i = 0; i < arrOfStr.length; i++) {
-                    String str = arrOfStr[i];
+                     String str = arrOfStr[i];
                     if (i == 4) {
                         // Transforms listed gender to single-char representation
                         if (str.equals("Male")) {

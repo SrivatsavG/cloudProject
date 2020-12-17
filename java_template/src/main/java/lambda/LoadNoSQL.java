@@ -41,7 +41,7 @@ public class LoadNoSQL implements RequestHandler<Request, HashMap<String, Object
     private DynamoDB dynamoDb;
 
     // TODO: Fill this in
-    private String DYNAMODB_TABLE_NAME = "Team9NoSQL";
+    private String DYNAMODB_TABLE_NAME;
 
     private Regions REGION = Regions.US_EAST_2;
 
@@ -62,6 +62,9 @@ public class LoadNoSQL implements RequestHandler<Request, HashMap<String, Object
         inspector.inspectAll();
 
         Response response = new Response();
+        
+        //TABLENAME
+        DYNAMODB_TABLE_NAME = request.getDynamoDBTableName();
 
         //S3 SETUP
         String bucketname = request.getBucketname();
@@ -94,9 +97,7 @@ public class LoadNoSQL implements RequestHandler<Request, HashMap<String, Object
             String line = scanner.nextLine();
             if (i != 0) {
                 String[] arrOfStr = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
-                //("insert into mytable values('" + request.getName() + "','b','c');");-- Tutorial 6 reference
-                logger.log("Adding row " + i);
-                
+                //("insert into mytable values('" + request.getName() + "','b','c');");-- Tutorial 6 reference             
 
                 Item item = new Item()
                         .withPrimaryKey("id", i)
@@ -119,25 +120,7 @@ public class LoadNoSQL implements RequestHandler<Request, HashMap<String, Object
         }
         scanner.close();
         logger.log("Writing to NoSQL successful");
-        response.setValue("Hello, THIS WAS SUCCESSFUL!!");
-
-//        do {
-//            ScanRequest scanRequest = new ScanRequest()
-//                    .withTableName("test_run")
-//                    .withLimit(10)
-//                    .withExclusiveStartKey(lastKeyEvaluated);
-//
-//            ScanResult result = client.scan(scanRequest);
-//            for (Map<String, AttributeValue> item : result.getItems()){
-//                System.out.println(item);
-////                logger.log(item.keySet());
-//            }
-//            lastKeyEvaluated = result.getLastEvaluatedKey();
-//        } while (lastKeyEvaluated != null);
-        //****************START FUNCTION IMPLEMENTATION*************************
-        //Add custom key/value attribute to SAAF's output. (OPTIONAL)
-        //Create and populate a separate response object for function output. (OPTIONAL)
-        response.setValue("Test, worked!");
+        response.setValue("Hello, Load to NoSQL WAS SUCCESSFUL!!");
 
         inspector.consumeResponse(response);
 
